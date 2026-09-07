@@ -1,0 +1,27 @@
+name = "MarkovCategories"
+uuid = "89535b7d-47b5-4a7c-ab85-485cba9d75b9"
+version = "0.1.0"
+authors = ["Simon Frost"]
+
+[deps]
+Catlab = "134e5e36-593f-5add-ad60-77f754baafbe"
+FiniteKernels = "2ee73795-50db-4096-9573-22982ed4949b"
+GATlab = "f0ffcf3b-d13a-433e-917c-cc44ccf5ead2"
+
+[sources]
+FiniteKernels = {path = "../FiniteKernels.jl"}
+
+[compat]
+Catlab = "0.17.6"
+FiniteKernels = "0.1"
+GATlab = "0.2.4"
+Random = "1"
+Test = "1"
+julia = "1.12"
+
+[extras]
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test", "Random"]

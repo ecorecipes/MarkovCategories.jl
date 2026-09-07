@@ -1,0 +1,10 @@
+[deps]
+Catlab = "134e5e36-593f-5add-ad60-77f754baafbe"
+Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
+MarkovCategories = "89535b7d-47b5-4a7c-ab85-485cba9d75b9"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+FiniteKernels = "2ee73795-50db-4096-9573-22982ed4949b"
+
+[sources]
+MarkovCategories = {path = ".."}
+FiniteKernels = {path = "../../FiniteKernels.jl"}

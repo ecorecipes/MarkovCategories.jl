@@ -1,0 +1,231 @@
+---
+title: "Markov categories as a GATlab theory"
+author: "Simon Frost"
+format:
+  html:
+    code-fold: false
+    toc: true
+  gfm:
+    toc: true
+  pdf: default
+engine: julia
+---
+
+## Overview
+
+`MarkovCategories.jl` states the operations on finite stochastic kernels of
+`FiniteKernels.jl` (whose "Finite stochastic kernels" vignette introduces them)
+as a GATlab *theory*, so that Catlab's symbolic expressions, wiring diagrams and
+`@instance` mechanism apply to conditional probability tables
+[@PattersonLynchFairbanks2022]. This vignette shows the theory hierarchy, builds
+free (symbolic) string-diagram expressions, evaluates them in **FinStoch**, and
+checks the Markov axiom numerically.
+
+## What is a Markov category?
+
+A **Markov category** [@Fritz2020], whose copy-discard fragment is the CD
+category of [@ChoJacobs2019], is a symmetric
+monoidal category $(\mathcal{C}, \otimes, I)$ in which every object $X$ carries
+a commutative comonoid
+
+$$
+\Delta_X : X \to X \otimes X, \qquad !_X : X \to I,
+$$
+
+compatible with the tensor product, and such that discarding is natural:
+$f \cdot !_Y = !_X$ for every morphism $f : X \to Y$. Morphisms are thought of
+as stochastic maps; $\Delta$ copies a value and $!$ forgets it. Copying is
+deliberately *not* required to be natural, because for a stochastic $f$,
+"sample once and copy" ($f \cdot \Delta_Y$) differs from "sample twice"
+($\Delta_X \cdot (f \otimes f)$). A symmetric monoidal category in which both
+$\Delta$ and $!$ are natural is *cartesian* -- this is Fox's theorem
+[@Fox1976] -- and there every morphism is deterministic. The same axioms are
+stated in Lean in Mathlib's `CopyDiscardCategory` and `MarkovCategory`
+[@Mathlib2020], which the `proofs/` development of `FiniteKernels.jl` follows.
+
+`MarkovCategories.jl` expresses this hierarchy with GATlab theories, reusing
+Catlab's monoidal-category theories so that Catlab's expression and
+wiring-diagram tooling applies unchanged:
+
+| theory | adds |
+|---|---|
+| `ThSymmetricMonoidalCategory` (Catlab) | `otimes`, `munit`, `braid` |
+| `ThCopyDiscardCategory` = `ThMonoidalCategoryWithDiagonals` (Catlab) | `mcopy`, `delete` and the comonoid and coherence axioms |
+| `ThMarkovCategory` (this package) | naturality of `delete` |
+| `ThCartesianCategory` (Catlab) | naturality of `mcopy` as well |
+
+## Setup
+
+```{julia}
+using MarkovCategories
+using Catlab
+```
+
+```{julia}
+ThMarkovCategory
+```
+
+The theory carries all the axioms of its parents; the last one is the Markov
+axiom. (Source-location comments are dropped from the printout.)
+
+```{julia}
+for line in split(sprint(show, ThMarkovCategory.Meta.theory), '\n')
+    occursin("#=", line) || println(line)
+end
+```
+
+## Free expressions
+
+`FreeMarkovCategory` is the symbolic model of `ThMarkovCategory`, built with
+Catlab's `@symbolic_model` in the same way as `FreeSymmetricMonoidalCategory`.
+Objects and generating morphisms are declared by name, and the operations build
+expressions with composition and tensor normalised to be strictly associative
+and unital.
+
+```{julia}
+X, Y, Z = Ob(FreeMarkovCategory, :X, :Y, :Z)
+f = Hom(:f, X, Y)
+g = Hom(:g, X, Z)
+p = Hom(:p, munit(FreeMarkovCategory.Ob), X)
+```
+
+A fan-out, in which one value of `X` feeds both `f` and `g`:
+
+```{julia}
+fanout = compose(mcopy(X), otimes(f, g))
+```
+
+```{julia}
+dom(fanout), codom(fanout)
+```
+
+Expressions have Unicode and LaTeX renderings:
+
+```{julia}
+show_unicode(fanout)
+```
+
+```{julia}
+show_latex(fanout)
+```
+
+Catlab can turn an expression into a wiring diagram (copies are drawn as a
+wire fanning out and deletions as a wire ending), and lay it out as TikZ or
+Graphviz:
+
+```{julia}
+wd = to_wiring_diagram(compose(p, fanout))
+nboxes(wd), nwires(wd)
+```
+
+```{julia}
+using Catlab.Graphics
+using Logging: NullLogger, with_logger
+# Catlab warns that the optional Convex/SCS port layout is unavailable; the
+# fixed layout is fine here.
+tikz = with_logger(NullLogger()) do
+    to_tikz(compose(p, fanout); labels=true)
+end
+lines = split(sprint(Catlab.Graphics.TikZ.pprint, tikz), '\n')
+println(join(lines[1:min(end, 12)], '\n'), "\n...")
+```
+
+The wiring-diagram graph can also be inspected directly:
+
+```{julia}
+to_graphviz(wd; labels=true) |> typeof
+```
+
+## FinStoch as a model
+
+The finite stochastic category is registered with
+`@instance ThMarkovCategory{FiniteSpace, FiniteKernel}`, so every operation in
+the theory hierarchy dispatches on spaces and kernels, including the operator
+aliases:
+
+```{julia}
+SX = FiniteSpace(:X, [:x0, :x1])
+SY = FiniteSpace(:Y, [:y0, :y1, :y2])
+SZ = FiniteSpace(:Z, [:z0, :z1])
+k = cpt(factors(SX)[1], factors(SY)[1], [0.7 0.2 0.1; 0.1 0.3 0.6])
+h = deterministic(SX, SZ, x -> x == :x0 ? :z0 : :z1)
+Δ(SX) ⋅ (k ⊗ h) == compose(mcopy(SX), otimes(k, h))
+```
+
+## Evaluating expressions
+
+`evaluate(expr, generators)` interprets a free expression in FinStoch by the
+structure-preserving functor determined by the images of the generators
+(Catlab's `functor` with the FinStoch instance supplying every non-generator
+node). Generators may be keyed by name or by expression.
+
+```{julia}
+prior = state(SX, [0.3, 0.7])
+gens = Dict(:X => SX, :Y => SY, :Z => SZ, :f => k, :g => h, :p => prior)
+evaluate(compose(p, fanout), gens)
+```
+
+The result is exactly the direct computation:
+
+```{julia}
+evaluate(compose(p, fanout), gens) ≈ compose(prior, mcopy(SX), otimes(k, h))
+```
+
+A chain $X \to Y \to Z$ written as an expression and as a matrix product:
+
+```{julia}
+l = cpt(factors(SY)[1], factors(SZ)[1], [0.9 0.1; 0.5 0.5; 0.2 0.8])
+chain = compose(Hom(:k, X, Y), Hom(:l, Y, Z))
+direct = compose(k, l)
+evaluate(chain, Dict(:X => SX, :Y => SY, :Z => SZ, :k => k, :l => l)) ≈ direct,
+kernel_matrix(direct) ≈ kernel_matrix(l) * kernel_matrix(k)
+```
+
+Generators without an image raise a typed error:
+
+```{julia}
+try
+    evaluate(chain, Dict(:X => SX, :Y => SY, :Z => SZ, :k => k))
+catch err
+    showerror(stdout, err)
+end
+```
+
+## The Markov axiom in FinStoch
+
+Because the instance is a model of `ThMarkovCategory`, the axioms hold
+numerically. Naturality of discard holds for every kernel built by the public
+constructors, since they are normalised:
+
+```{julia}
+evaluate(compose(f, delete(Y)), gens) ≈ evaluate(delete(X), gens)
+```
+
+Naturality of copy, the extra cartesian axiom, holds for the deterministic
+`h` but not for the stochastic `k`:
+
+```{julia}
+copy_natural(m) = compose(m, mcopy(codom(m))) ≈ compose(mcopy(dom(m)), otimes(m, m))
+copy_natural(h), copy_natural(k)
+```
+
+This is the formal content of "copy once is not two samples" from the
+`FiniteKernels.jl` vignette, and the reason Bayesian-network semantics must live
+in a Markov category rather than a cartesian one.
+
+## Summary
+
+`ThMarkovCategory` is Catlab's `ThMonoidalCategoryWithDiagonals` plus the single
+axiom that discarding is natural; `FreeMarkovCategory` builds string-diagram
+expressions over that theory, and the FinStoch `@instance` makes the same
+operations run on conditional probability tables, so `evaluate` is an honest
+functor from expressions to kernels. Naturality of copy, the extra axiom that
+would make the category cartesian, holds only for deterministic kernels, which
+is why Bayesian networks need a Markov category. `BayesianNetworks.jl` builds on
+this layer, representing a network as an ACSet and compiling it to exactly the
+kind of expression evaluated here.
+
+## References
+
+::: {#refs}
+:::

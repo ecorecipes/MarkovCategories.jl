@@ -1,0 +1,19 @@
+.DS_Store
+/Manifest.toml
+/Manifest-v*.toml
+docs/build/
+docs/Manifest.toml
+docs/Manifest-v*.toml
+
+# Coverage and allocation output from `Pkg.test(coverage=true)` and `--track-allocation`.
+*.cov
+*.mem
+*.jl.*.cov
+
+# LaTeX intermediates. Rendered documents are deliberate, committed outputs and stay
+# tracked: vignettes/*/*.{html,md,pdf} and docs/src/tutorials/**.
+*.tex
+*.aux
+*.log
+*.out
+*.toc
