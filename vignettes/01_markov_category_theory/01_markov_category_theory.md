@@ -198,13 +198,14 @@ println(join(lines[1:min(end, 12)], '\n'), "\n...")
       \path[wire] (n2.30) to[out=30,in=-180] (n3.west);
     ...
 
-The wiring-diagram graph can also be inspected directly:
+The preceding block shows generated TikZ source. This cell renders the
+Graphviz drawing itself, rather than printing the graph object’s type:
 
 ``` julia
-to_graphviz(wd; labels=true) |> typeof
+to_graphviz(wd; labels=true)
 ```
 
-    Catlab.Graphics.Graphviz.Graph
+![](01_markov_category_theory_files/figure-commonmark/cell-12-output-1.svg)
 
 ## FinStoch as a model
 
@@ -314,10 +315,12 @@ string-diagram expressions over that theory, and the FinStoch
 `@instance` makes the same operations run on conditional probability
 tables, so `evaluate` is an honest functor from expressions to kernels.
 Naturality of copy, the extra axiom that would make the category
-cartesian, holds only for deterministic kernels, which is why Bayesian
-networks need a Markov category. `BayesianNetworks.jl` builds on this
-layer, representing a network as an ACSet and compiling it to exactly
-the kind of expression evaluated here.
+cartesian, holds only for deterministic kernels, which is why
+Bayesian-network semantics need a Markov category.
+`CategoricalBayesianNetworks.jl` compiles the ACSet structures supplied
+by `BayesianNetworks.jl` into these expressions. The ordinary model and
+inference packages remain independent of Catlab and this categorical
+adapter.
 
 ## References
 

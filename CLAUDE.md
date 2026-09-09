@@ -31,6 +31,9 @@ Sibling packages are expected at `../<Name>.jl` (see `[sources]` in Project.toml
 ## Layout
 
 - `src/theory.jl`: `ThCopyDiscardCategory` alias, `@theory ThMarkovCategory`, `@symbolic_model FreeMarkovCategory`.
+  The canonical theory docstring is attached after generation to avoid GATlab's nested-Markdown
+  document node. The full generated theory remains available as `ThMarkovCategory.Meta.theory`.
+  Vignette GFM is rendered last so its external SVG survives HTML/PDF cleanup before tutorial sync.
 - `src/finstoch_model.jl`: `@instance ThMarkovCategory{FiniteSpace,FiniteKernel}` (the only place the Catlab
   generic functions are given kernel methods), n-ary `compose`/`otimes`, `evaluate`, `UnboundGeneratorError`.
 - `src/wiring_diagrams.jl`: the `Ports` method that lets Catlab's `to_wiring_diagram`/`to_tikz` draw free expressions.

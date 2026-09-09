@@ -16,6 +16,10 @@ All three rendered outputs are committed. `julia scripts/sync_vignettes.jl` copi
 Markdown into `docs/src/tutorials/` for Documenter, and CI runs
 `sync_vignettes.jl --check` and fails if the copies are stale.
 
+The document lists GFM last so its external figure assets remain after the
+self-contained HTML/PDF renderings. If rendering formats separately, render
+GFM last before syncing the tutorials.
+
 Every `.qmd` must carry `engine: julia` and list `pdf: default` under `format:` in its
 front matter (a document-level `format:` block otherwise hides the project-level PDF
 format). Make sure the package is precompiled before rendering, otherwise Julia's

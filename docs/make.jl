@@ -46,6 +46,7 @@ bib = CitationBibliography(joinpath(@__DIR__, "src", "references.bib");
 makedocs(;
          remote_kw...,
          modules=[MarkovCategories],
+         checkdocs=:exports,
          sitename="MarkovCategories.jl",
          authors="Simon Frost",
          warnonly=[:missing_docs, :cross_references],

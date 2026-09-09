@@ -14,7 +14,12 @@
 # Catlab's docstring. The alias is documented here and in `ThMarkovCategory`.)
 const ThCopyDiscardCategory = ThMonoidalCategoryWithDiagonals
 
-"""
+@theory ThMarkovCategory <: ThMonoidalCategoryWithDiagonals begin
+    # Naturality of discard: every morphism preserves normalisation.
+    f ⋅ ◊(B) == ◊(A) ⊣ [A::Ob, B::Ob, f::(A → B)]
+end
+
+@doc """
     ThMarkovCategory
 
 Theory of Markov categories: `ThCopyDiscardCategory` (this package's alias for
@@ -37,13 +42,9 @@ the same axioms, checked to agree by hand rather than mechanically.
 
 The finite stochastic model is registered with
 `@instance ThMarkovCategory{FiniteSpace, FiniteKernel}`; the free model is
-[`FreeMarkovCategory`](@ref). (GATlab appends the full list of axioms to this
-docstring; see `?ThMarkovCategory`.)
-"""
-@theory ThMarkovCategory <: ThMonoidalCategoryWithDiagonals begin
-    # Naturality of discard: every morphism preserves normalisation.
-    f ⋅ ◊(B) == ◊(A) ⊣ [A::Ob, B::Ob, f::(A → B)]
-end
+[`FreeMarkovCategory`](@ref). The complete generated list of operations and
+axioms is available as `ThMarkovCategory.Meta.theory`.
+""" ThMarkovCategory
 
 @symbolic_model FreeMarkovCategory{ObExpr,HomExpr} ThMarkovCategory begin
     otimes(A::Ob, B::Ob) = associate_unit(new(A, B), munit)
