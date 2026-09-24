@@ -4,7 +4,8 @@ using Documenter
 using DocumenterCitations
 using MarkovCategories
 
-DocMeta.setdocmeta!(MarkovCategories, :DocTestSetup, :(using MarkovCategories); recursive=true)
+DocMeta.setdocmeta!(MarkovCategories, :DocTestSetup, :(using MarkovCategories);
+                    recursive=true)
 
 # Tutorials are rendered quarto vignettes copied into docs/src/tutorials by
 # scripts/sync_vignettes.jl. The page list is built from the files on disk so
@@ -59,5 +60,5 @@ makedocs(;
          plugins=[bib])
 
 "--no-deploy" in ARGS || deploydocs(;
-           repo="github.com/ecorecipes/MarkovCategories.jl.git",
-           devbranch="main")
+                                    repo="github.com/ecorecipes/MarkovCategories.jl.git",
+                                    devbranch="main")

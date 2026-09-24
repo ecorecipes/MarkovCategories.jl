@@ -48,15 +48,19 @@ otimes(k::FiniteKernel, l::FiniteKernel, ms::FiniteKernel...) = otimes(otimes(k,
 otimes(X::FiniteSpace, Y::FiniteSpace, Zs::FiniteSpace...) = otimes(otimes(X, Y), Zs...)
 
 function _evaluate(expr::GATExpr, generators::AbstractDict{Symbol})
-    lookup(e) = haskey(generators, first(e)) ? generators[first(e)] :
-                throw(UnboundGeneratorError(first(e)))
+    function lookup(e)
+        return haskey(generators, first(e)) ? generators[first(e)] :
+               throw(UnboundGeneratorError(first(e)))
+    end
     return functor((FiniteSpace, FiniteKernel), expr;
                    terms=Dict(:Ob => lookup, :Hom => lookup))
 end
 
 function _evaluate(expr::GATExpr, generators::AbstractDict)
-    lookup(e) = haskey(generators, e) ? generators[e] :
-                throw(UnboundGeneratorError(first(e)))
+    function lookup(e)
+        return haskey(generators, e) ? generators[e] :
+               throw(UnboundGeneratorError(first(e)))
+    end
     return functor((FiniteSpace, FiniteKernel), expr;
                    terms=Dict(:Ob => lookup, :Hom => lookup))
 end
