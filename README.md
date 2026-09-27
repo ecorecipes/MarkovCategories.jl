@@ -26,7 +26,8 @@ has neither Catlab nor GATlab in its dependency graph. This package adds the cat
 - `@instance ThMarkovCategory{FiniteSpace, FiniteKernel}`: the category **FinStoch**, binding Catlab's generic
   functions to the SPEC section 3.2 implementations of `FiniteKernels.jl`.
 - `evaluate(expr, generators)`: the structure-preserving functor from free expressions to kernels, with
-  `UnboundGeneratorError` for a generator with no image.
+  `UnboundGeneratorError` for a generator with no image. It subtypes the re-exported `FiniteKernelsError`, so one
+  `catch` covers it and the kernel errors.
 - Wiring-diagram support: `to_wiring_diagram`, `to_graphviz` and `to_tikz` work on `FreeMarkovCategory`
   expressions, with copies and discards drawn implicitly.
 

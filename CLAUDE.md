@@ -26,7 +26,9 @@ Sibling packages are expected at `../<Name>.jl` (see `[sources]` in Project.toml
   `discard_kernel`, `braid` → `swap_kernel`, `munit` → `FiniteSpace()`. Numerical work belongs downstairs.
 - `using MarkovCategories` must stay a superset of `using FiniteKernels`: the re-export list at the top of
   `src/MarkovCategories.jl` mirrors `FiniteKernels`' exports, and `FiniteKernels` is imported by name (not with
-  a bare `using`) so that a name Catlab also exports resolves to the kernel one.
+  a bare `using`) so that a name Catlab also exports resolves to the kernel one. A name added to
+  `FiniteKernels`' exports must be added to both the import list and the export list; `test/test_errors.jl`
+  fails if an exported `FiniteKernels` exception type (the root `FiniteKernelsError` included) is missing.
 - `ThMarkovCategory` extends `ThMonoidalCategoryWithDiagonals` with exactly one axiom, naturality of discard.
   Copying is not natural and must not become so: adding that axiom would make the theory cartesian (Fox).
 - `evaluate` extends `Catlab.evaluate`, it does not shadow it. Its methods are split by expression type so that
@@ -34,16 +36,24 @@ Sibling packages are expected at `../<Name>.jl` (see `[sources]` in Project.toml
 
 ## Layout
 
+- `src/errors.jl`: the package's one exception, `UnboundGeneratorError`, with its `showerror`. It subtypes
+  `FiniteKernelsError` (ADR 0013), the root of the tier below, and there is no root of this package's own; a
+  second exception type would add an abstract type under `FiniteKernelsError`. Included first.
 - `src/theory.jl`: `ThCopyDiscardCategory` alias, `@theory ThMarkovCategory`, `@symbolic_model FreeMarkovCategory`.
   The canonical theory docstring is attached after generation to avoid GATlab's nested-Markdown
   document node. The full generated theory remains available as `ThMarkovCategory.Meta.theory`.
   Vignette GFM is rendered last so its external SVG survives HTML/PDF cleanup before tutorial sync.
 - `src/finstoch_model.jl`: `@instance ThMarkovCategory{FiniteSpace,FiniteKernel}` (the only place the Catlab
-  generic functions are given kernel methods), n-ary `compose`/`otimes`, `evaluate`, `UnboundGeneratorError`.
+  generic functions are given kernel methods), n-ary `compose`/`otimes`, `evaluate`.
 - `src/wiring_diagrams.jl`: the `Ports` method that lets Catlab's `to_wiring_diagram`/`to_tikz` draw free expressions.
 - `test/test_theory.jl`: the suite — the theory's axiom count, the FinStoch instance, free expressions,
   evaluation and wiring diagrams. Seeded RNGs only. The numerical Markov-category laws are checked in
   `FiniteKernels.jl/test/test_laws.jl`.
+- `test/test_errors.jl`: the exception hierarchy (every exception type the module defines is a
+  `FiniteKernelsError` and prints unqualified), the drift test that every exception type `FiniteKernels` exports is
+  re-exported as the same binding, and the root catching evaluation errors, a passed-through
+  `SpaceMismatchError` included.
+- `test/test_docstrings.jl`: every exported name this package owns has a docstring.
 
 ## Commands
 

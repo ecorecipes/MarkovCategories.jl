@@ -1,19 +1,5 @@
 # FinStoch as a model of ThMarkovCategory, and evaluation of free expressions.
-
-"""
-    UnboundGeneratorError(name)
-
-Thrown by [`evaluate`](@ref) when a generator of the expression has no image in
-the `generators` dictionary.
-"""
-struct UnboundGeneratorError <: Exception
-    name::Any
-end
-
-function Base.showerror(io::IO, e::UnboundGeneratorError)
-    return print(io, "UnboundGeneratorError: no kernel or space bound to generator ",
-                 repr(e.name))
-end
+# `UnboundGeneratorError`, which `evaluate` throws, is defined in errors.jl.
 
 # FinStoch: finite spaces and stochastic kernels as a model of ThMarkovCategory.
 #

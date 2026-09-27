@@ -18,7 +18,6 @@ axiom that discarding is natural.
 ThMarkovCategory
 FreeMarkovCategory
 evaluate(::MarkovCategories.HomExpr, ::AbstractDict)
-UnboundGeneratorError
 ```
 
 ## The FinStoch instance
@@ -38,3 +37,21 @@ documented in the
 `src/wiring_diagrams.jl` adds `mcopy(::Ports{ThMarkovCategory.Meta.T}, n)`, so
 that Catlab's `to_wiring_diagram`, `to_graphviz` and `to_tikz` work on
 `FreeMarkovCategory` expressions with copies and discards drawn implicitly.
+
+## Exceptions
+
+`UnboundGeneratorError` is the only exception type this package defines. Following
+ADR 0013 it subtypes `FiniteKernelsError`, the root of the `FiniteKernels.jl`
+tier, rather than adding a root of its own. The root and the five kernel errors
+(`InvalidAxisError`, `KernelShapeError`, `KernelEntryError`,
+`KernelNormalizationError` and `SpaceMismatchError`) are re-exported here and
+documented in the
+[`FiniteKernels.jl` API reference](https://ecorecipes.github.io/FiniteKernels.jl/api/).
+The FinStoch instance passes the kernel errors through unchanged, so a single
+`catch` on `FiniteKernelsError` covers both an unbound generator in
+[`evaluate`](@ref) and a bound kernel whose spaces do not fit the expression
+(`SpaceMismatchError`).
+
+```@docs
+UnboundGeneratorError
+```

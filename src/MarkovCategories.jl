@@ -51,8 +51,8 @@ using FiniteKernels: FiniteAxis, FiniteSpace, factors, labels, axis_names, state
                      kernel_matrix, probability, cpt, state, point_mass, dirac, uniform,
                      deterministic, random_kernel, compose_kernel, tensor_kernel,
                      identity_kernel, copy_kernel, discard_kernel, swap_kernel, marginal,
-                     apply, InvalidAxisError, KernelShapeError, KernelEntryError,
-                     KernelNormalizationError, SpaceMismatchError
+                     apply, FiniteKernelsError, InvalidAxisError, KernelShapeError,
+                     KernelEntryError, KernelNormalizationError, SpaceMismatchError
 
 import Catlab.Theories: dom, codom, id, compose, otimes, munit, braid, mcopy, delete,
                         Ob, Hom
@@ -71,9 +71,10 @@ export FiniteKernel, is_normalized, is_stochastic, normalize, assert_normalized,
 # SPEC section 3.2 names of the operations the `@instance` binds
 export compose_kernel, tensor_kernel, identity_kernel, copy_kernel, discard_kernel,
        swap_kernel, marginal, apply
-# FiniteKernels exceptions
-export InvalidAxisError, KernelShapeError, KernelEntryError, KernelNormalizationError,
-       SpaceMismatchError
+# FiniteKernels exceptions: the root, which `UnboundGeneratorError` also subtypes, and every
+# concrete type (test/test_errors.jl checks that none is missing)
+export FiniteKernelsError, InvalidAxisError, KernelShapeError, KernelEntryError,
+       KernelNormalizationError, SpaceMismatchError
 
 # Markov-category operations (Catlab generic functions re-exported)
 export dom, codom, id, compose, otimes, munit, braid, mcopy, delete, ⋅, ⊗, Δ, ◊, σ,
@@ -83,6 +84,8 @@ export ThCopyDiscardCategory, ThMarkovCategory, FreeMarkovCategory, evaluate
 # Exceptions of this layer
 export UnboundGeneratorError
 
+# errors.jl comes first: `evaluate` in finstoch_model.jl throws its type (ADR 0013).
+include("errors.jl")
 include("theory.jl")
 include("finstoch_model.jl")
 include("wiring_diagrams.jl")
