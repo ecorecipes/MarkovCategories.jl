@@ -324,48 +324,72 @@ adapter.
 
 ## References
 
+```@raw html
 <div id="refs" class="references csl-bib-body hanging-indent">
+```
 
+```@raw html
 <div id="ref-ChoJacobs2019" class="csl-entry">
+```
 
 Cho, Kenta, and Bart Jacobs. 2019. “Disintegration and Bayesian
 Inversion via String Diagrams.” *Mathematical Structures in Computer
 Science* 29 (7): 938–71. <https://doi.org/10.1017/S0960129518000488>.
 
+```@raw html
 </div>
+```
 
+```@raw html
 <div id="ref-Fox1976" class="csl-entry">
+```
 
 Fox, Thomas. 1976. “Coalgebras and Cartesian Categories.”
 *Communications in Algebra* 4 (7): 665–67.
 <https://doi.org/10.1080/00927877608822127>.
 
+```@raw html
 </div>
+```
 
+```@raw html
 <div id="ref-Fritz2020" class="csl-entry">
+```
 
 Fritz, Tobias. 2020. “A Synthetic Approach to Markov Kernels,
 Conditional Independence and Theorems on Sufficient Statistics.”
 *Advances in Mathematics* 370: 107239.
 <https://doi.org/10.1016/j.aim.2020.107239>.
 
+```@raw html
 </div>
+```
 
+```@raw html
 <div id="ref-PattersonLynchFairbanks2022" class="csl-entry">
+```
 
 Patterson, Evan, Owen Lynch, and James Fairbanks. 2022. “Categorical
 Data Structures for Technical Computing.” *Compositionality* 4 (5).
 <https://doi.org/10.32408/compositionality-4-5>.
 
+```@raw html
 </div>
+```
 
+```@raw html
 <div id="ref-Mathlib2020" class="csl-entry">
+```
 
 The mathlib Community. 2020. “The Lean Mathematical Library.”
 *Proceedings of the 9th ACM SIGPLAN International Conference on
 Certified Programs and Proofs (CPP 2020)*, 367–81.
 <https://doi.org/10.1145/3372885.3373824>.
 
+```@raw html
 </div>
+```
 
+```@raw html
 </div>
+```
