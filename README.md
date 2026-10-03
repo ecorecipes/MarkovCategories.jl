@@ -71,8 +71,12 @@ evaluate(expr, Dict(:X => R, :Y => G, :f => k, :q => p)) ≈ joint   # true
 
 ## Vignettes
 
-Rendered vignettes live in [`vignettes/`](vignettes/) and are published in the
-[documentation](https://ecorecipes.github.io/MarkovCategories.jl/).
+| # | Vignette | Description |
+|---|---|---|
+| 1 | [Markov categories as a GATlab theory](https://github.com/ecorecipes/MarkovCategories.jl/blob/main/vignettes/01_markov_category_theory/01_markov_category_theory.md) | Markov categories, free expressions, FinStoch as a model, and evaluating expressions |
+
+Each vignette is also published as a tutorial in the [documentation](https://ecorecipes.github.io/MarkovCategories.jl/);
+the sources are the `.qmd` files in [`vignettes/`](vignettes/).
 
 ## References
 
